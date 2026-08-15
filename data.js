@@ -51,7 +51,7 @@ export const FONT_KEYS = [
 export const TOOLBAR_ITEMS = [
   { id: 0,  label: '空白佔位',   android: '',    ios: '' },
   { id: 1,  label: '設定',       android: '設',  ios: { icon: 'gearshape' } },
-  { id: 2,  label: '收折鍵盤',   android: '⌄',   ios: { icon: 'chevron.down' } },
+  { id: 2,  label: '收折鍵盤',   android: '∨',   ios: { icon: 'chevron.down' } },
   { id: 3,  label: '中英切換',   android: '米',  ios: '米' },
   { id: 4,  label: '簡繁切換',   android: '簡',  ios: null },
   { id: 5,  label: '常用語',     android: '♥︎',  ios: { icon: 'heart.fill' } },
