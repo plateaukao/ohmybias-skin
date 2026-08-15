@@ -7,6 +7,7 @@ import {
 } from './data.js';
 import { renderPreview, DESIGN_WIDTH } from './preview.js';
 import { zipStore, extractSettingsJson } from './zip.js';
+import { glyphNode } from './icons.js';
 
 const STORAGE_KEY = 'ohmybias-skin-designer-v1';
 
@@ -317,10 +318,11 @@ function renderToolbarPanel() {
 
   const strip = h('div', 'tb-strip');
   state.toolbarButtons.forEach((id, i) => {
-    const { glyph, supported } = toolbarGlyph(id);
-    const cell = h('button', 'tb-slot' + (ui.slot === i ? ' on' : '') + (supported ? '' : ' unsupported'), glyph || '·');
+    const { glyph, supported, label } = toolbarGlyph(id);
+    const cell = h('button', 'tb-slot' + (ui.slot === i ? ' on' : '') + (supported ? '' : ' unsupported'));
+    cell.appendChild(glyph ? glyphNode(glyph) : document.createTextNode('·'));
     cell.type = 'button';
-    cell.title = toolbarGlyph(id).label;
+    cell.title = label;
     cell.addEventListener('click', () => { ui.slot = i; renderToolbarPanel(); });
     strip.appendChild(cell);
   });
@@ -331,7 +333,10 @@ function renderToolbarPanel() {
     const supported = it[state.platform] !== null;
     const b = h('button', 'tb-option' + (supported ? '' : ' unsupported'));
     b.type = 'button';
-    b.appendChild(h('span', 'tb-option-glyph', (supported ? it[state.platform] : it.android) || '·'));
+    const glyphSpan = h('span', 'tb-option-glyph');
+    const optGlyph = supported ? it[state.platform] : it.android;
+    glyphSpan.appendChild(optGlyph ? glyphNode(optGlyph) : document.createTextNode('·'));
+    b.appendChild(glyphSpan);
     b.appendChild(h('span', 'tb-option-label', it.label));
     if (!supported) b.appendChild(h('span', 'badge', '僅 Android'));
     b.addEventListener('click', () => {

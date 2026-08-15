@@ -46,29 +46,30 @@ export const FONT_KEYS = [
 ];
 
 /// 工具列按鈕目錄 — 只列兩個 App 至少其一支援的 ID。
-/// android / ios 欄：該平台的顯示字樣；null = 該平台不支援（App 會顯示空格）。
+/// android 欄：文字字樣；ios 欄：文字或 { icon }（SF Symbol 名，對應 ohmybias-ios
+/// CandidateBar.swift，以 icons.js 的 SVG 模擬）；null = 該平台不支援（App 顯示空格）。
 export const TOOLBAR_ITEMS = [
   { id: 0,  label: '空白佔位',   android: '',    ios: '' },
-  { id: 1,  label: '設定',       android: '設',  ios: '⚙︎' },
-  { id: 2,  label: '收折鍵盤',   android: '⌄',   ios: '⌄' },
+  { id: 1,  label: '設定',       android: '設',  ios: { icon: 'gearshape' } },
+  { id: 2,  label: '收折鍵盤',   android: '⌄',   ios: { icon: 'chevron.down' } },
   { id: 3,  label: '中英切換',   android: '米',  ios: '米' },
   { id: 4,  label: '簡繁切換',   android: '簡',  ios: null },
-  { id: 5,  label: '常用語',     android: '♥︎',  ios: '♥︎' },
-  { id: 7,  label: '符號面板',   android: '符',  ios: '{ }' },
-  { id: 8,  label: 'Emoji',      android: '☺︎',  ios: '☺︎' },
+  { id: 5,  label: '常用語',     android: '♥︎',  ios: { icon: 'heart.fill' } },
+  { id: 7,  label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' } },
+  { id: 8,  label: 'Emoji',      android: '☺︎',  ios: { icon: 'face.smiling' } },
   { id: 9,  label: '數字鍵盤',   android: '123', ios: '123' },
-  { id: 10, label: '全選（Android）／常用語（iOS）', android: '全', ios: '♥︎' },
+  { id: 10, label: '全選（Android）／常用語（iOS）', android: '全', ios: { icon: 'heart.fill' } },
   { id: 11, label: '複製',       android: '複',  ios: null },
   { id: 12, label: '剪下',       android: '剪',  ios: null },
-  { id: 13, label: '貼上',       android: '貼',  ios: '⎘' },
+  { id: 13, label: '貼上',       android: '貼',  ios: { icon: 'doc.on.clipboard' } },
   { id: 14, label: '復原',       android: '↶',   ios: null },
   { id: 15, label: '重做',       android: '↷',   ios: null },
-  { id: 16, label: '游標左移',   android: '←',   ios: '←' },
-  { id: 17, label: '游標右移',   android: '→',   ios: '→' },
+  { id: 16, label: '游標左移',   android: '←',   ios: { icon: 'arrow.left' } },
+  { id: 17, label: '游標右移',   android: '→',   ios: { icon: 'arrow.right' } },
   { id: 26, label: '顏文字',     android: '顏',  ios: '顏' },
   { id: 27, label: '注音查碼',   android: 'ㄅ',  ios: 'ㄅ' },
   { id: 29, label: '九宮格數字', android: '123', ios: '123' },
-  { id: 30, label: '符號面板',   android: '符',  ios: '{ }' },
+  { id: 30, label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' } },
 ];
 
 /// 內建預設工具列（兩個 App 相同）

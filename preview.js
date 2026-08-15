@@ -8,6 +8,7 @@ import {
   SWIPE_UP, SWIPE_DOWN, TOOLBAR_ITEMS, PANEL_SYMBOLS, PANEL_EMOJIS,
   BUBBLE_SAMPLE_UPPER_FIRST, BUBBLE_SAMPLE_LOWER_FIRST,
 } from './data.js';
+import { glyphNode } from './icons.js';
 
 const W = 393, BODY_H = 224, BAR_H = 46;
 const PAD_TOP = 6, PAD_BOTTOM = 6, PAD_SIDE = 3, ROW_SPACING = 8, KEY_SPACING = 5;
@@ -192,7 +193,8 @@ function buildBar(state, dark, ui) {
     state.toolbarButtons.forEach(id => {
       const it = items[id];
       const glyph = it ? it[state.platform] : null;
-      const b = el('pv-tool', glyph || '');
+      const b = el('pv-tool');
+      b.appendChild(glyphNode(glyph));
       b.style.fontSize = u(19);
       b.style.color = pal(state, dark, 'toolbarColor');
       bar.appendChild(b);
