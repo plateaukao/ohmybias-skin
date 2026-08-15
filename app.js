@@ -161,16 +161,27 @@ function settingsJson() {
   }, null, 2);
 }
 
+/// 上一次匯出的 object URL — 只在下一次匯出時回收。
+/// 不可用計時器提早 revoke：WebView 系瀏覽器（如 EinkBro）會先跳檔名確認框、
+/// 之後才在頁面裡 fetch 這個 blob URL — URL 先死掉就會「下載連結無效」。
+let lastExportUrl = null;
+
 function exportCskin() {
   const data = new TextEncoder().encode(settingsJson());
   const bytes = zipStore([{ name: 'jsonnet/settings.json', data }]);
   const name = (state.skinName.trim() || 'ohmybias-skin').replace(/[\\/:*?"<>|]/g, '_');
   const blob = new Blob([bytes], { type: 'application/zip' });
+  if (lastExportUrl) URL.revokeObjectURL(lastExportUrl);
+  lastExportUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = lastExportUrl;
   a.download = `${name}.cskin`;
+  a.rel = 'noopener';
+  // 錨點須實際掛進 DOM：部分瀏覽器攔截下載靠 document 層的點擊事件
+  //（EinkBro 的 blob 直讀 hook 即是），游離節點的 click 不會經過
+  document.body.appendChild(a);
   a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
+  a.remove();
   toast(`已匯出 ${name}.cskin — 到 App「匯入皮膚」選這個檔`);
 }
 
