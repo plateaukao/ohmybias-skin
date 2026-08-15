@@ -56,13 +56,13 @@ function loadState() {
     Object.assign(s, saved);
     // 舊存檔缺鍵時補預設
     s.palette = {
-      light: { ...defaultPalette('light'), ...(saved.palette?.light || {}) },
-      dark: { ...defaultPalette('dark'), ...(saved.palette?.dark || {}) },
+      light: { ...defaultPalette('light'), ...((saved.palette && saved.palette.light) || {}) },
+      dark: { ...defaultPalette('dark'), ...((saved.palette && saved.palette.dark) || {}) },
     };
     s.groups = { ...defaultGroups(), ...(saved.groups || {}) };
     s.swipe = { ...defaultState().swipe, ...(saved.swipe || {}) };
     return s;
-  } catch { return defaultState(); }
+  } catch (e) { return defaultState(); }
 }
 
 let saveTimer = null;
@@ -91,14 +91,14 @@ function materializePalette(imported, mode) {
 
 function parseSettings(jsonText) {
   let root;
-  try { root = JSON.parse(jsonText); } catch { return null; }
+  try { root = JSON.parse(jsonText); } catch (e) { return null; }
   if (typeof root !== 'object' || root === null) return null;
   const s = defaultState();
   s.platform = state.platform;
-  if (typeof root.skinInfo?.name === 'string' && root.skinInfo.name) s.skinName = root.skinInfo.name;
+  if (root.skinInfo && typeof root.skinInfo.name === 'string' && root.skinInfo.name) s.skinName = root.skinInfo.name;
 
   const buttons = Array.isArray(root.toolbarButtons) ? root.toolbarButtons
-    : Array.isArray(root.toolbar?.toolbarButtons) ? root.toolbar.toolbarButtons : null;
+    : root.toolbar && Array.isArray(root.toolbar.toolbarButtons) ? root.toolbar.toolbarButtons : null;
   if (buttons) {
     const ids = buttons.filter(v => typeof v === 'number').map(v => Math.trunc(v));
     if (ids.length) s.toolbarButtons = ids.slice(0, 10);
@@ -106,7 +106,7 @@ function parseSettings(jsonText) {
   }
 
   for (const key of ['keyboardLayout', 'longPressLayout']) {
-    const flat = root[key], nested = root.layout?.[key];
+    const flat = root[key], nested = (root.layout || {})[key];
     if (typeof flat === 'string' && flat) s[key] = flat;
     if (typeof nested === 'string' && nested) s[key] = nested;
   }
@@ -119,7 +119,7 @@ function parseSettings(jsonText) {
       showSwipeUpText: root.showSwipeUpText !== false,
       showSwipeDownText: root.showSwipeDownText !== false,
     };
-  } else if (Array.isArray(root.swipe?.globalEnabledFeatures)) {
+  } else if (root.swipe && Array.isArray(root.swipe.globalEnabledFeatures)) {
     const f = root.swipe.globalEnabledFeatures;
     s.swipe = {
       swipeUp: f.includes('swipeUp'), swipeDown: f.includes('swipeDown'),
@@ -128,13 +128,13 @@ function parseSettings(jsonText) {
     };
   }
 
-  const palette = root.palette || root.globalSettings?.palette;
+  const palette = root.palette || (root.globalSettings || {}).palette;
   s.palette = {
-    light: materializePalette(palette?.light, 'light'),
-    dark: materializePalette(palette?.dark, 'dark'),
+    light: materializePalette(palette ? palette.light : null, 'light'),
+    dark: materializePalette(palette ? palette.dark : null, 'dark'),
   };
 
-  const groups = root.groups || root.globalSettings?.groups;
+  const groups = root.groups || (root.globalSettings || {}).groups;
   if (groups) {
     for (const f of FONT_KEYS) {
       if (typeof groups[f.key] === 'number') s.groups[f.key] = groups[f.key];
@@ -317,7 +317,7 @@ function toolbarGlyph(id) {
   const it = TOOLBAR_ITEMS.find(t => t.id === id);
   if (!it) return { glyph: '', supported: false, label: `#${id}` };
   const glyph = it[state.platform];
-  return { glyph: glyph ?? '', supported: glyph !== null, label: it.label };
+  return { glyph: glyph == null ? '' : glyph, supported: glyph !== null, label: it.label };
 }
 
 function renderToolbarPanel() {
@@ -662,10 +662,16 @@ function renderAll() {
 
 // 預覽縮放：--u = 實際寬 / 設計寬 393
 const frame = $('#pv-frame');
-new ResizeObserver(entries => {
-  const w = entries[0].contentRect.width;
-  frame.style.setProperty('--u', `${w / DESIGN_WIDTH}px`);
-}).observe(frame);
+function syncPreviewScale() {
+  frame.style.setProperty('--u', `${frame.clientWidth / DESIGN_WIDTH}px`);
+}
+// 舊 WebView（Chrome < 64）沒有 ResizeObserver — 退回 window resize
+if (typeof ResizeObserver !== 'undefined') {
+  new ResizeObserver(syncPreviewScale).observe(frame);
+} else {
+  window.addEventListener('resize', syncPreviewScale);
+}
+syncPreviewScale();
 
 setupActions();
 renderAll();

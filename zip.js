@@ -97,6 +97,9 @@ export async function zipExtract(bytes, entry) {
   const comp = bytes.subarray(start, start + entry.compSize);
   if (entry.method === 0) return comp;
   if (entry.method === 8) {
+    // 舊瀏覽器（Chrome < 103）沒有 DecompressionStream — 只影響匯入
+    // DEFLATE 壓縮的 .cskin（本設計器匯出的是 STORE，不受影響）
+    if (typeof DecompressionStream === 'undefined') return null;
     const ds = new DecompressionStream('deflate-raw');
     const blob = new Blob([comp]);
     const out = await new Response(blob.stream().pipeThrough(ds)).arrayBuffer();
