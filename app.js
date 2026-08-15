@@ -442,7 +442,7 @@ function renderColorPanel() {
       palette[c.key] = joinColor(picker.value, splitColor(palette[c.key]).alpha);
       onStateChanged();
       swatch.style.setProperty('--sw', palette[c.key]);
-      hex.value = palette[c.key];
+      hex.value = palette[c.key].slice(1);
     });
     swatchWrap.appendChild(picker);
     swatchWrap.appendChild(swatch);
@@ -450,18 +450,20 @@ function renderColorPanel() {
 
     const meta = h('div', 'color-meta');
     meta.appendChild(h('span', 'color-label', c.label));
+    // 顯示不帶 #（每個色值都有，寫出來只是雜訊）；輸入帶不帶 # 都收，
+    // 內部與匯出仍是 App 端要的 #RRGGBB(AA)
     const hex = h('input', 'hex-input');
     hex.type = 'text';
-    hex.value = palette[c.key];
+    hex.value = palette[c.key].slice(1);
     hex.spellcheck = false;
     hex.addEventListener('change', () => {
-      const v = hex.value.trim();
-      if (/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(v)) {
-        palette[c.key] = v.toUpperCase();
+      const v = hex.value.trim().replace(/^#/, '');
+      if (/^[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(v)) {
+        palette[c.key] = '#' + v.toUpperCase();
         onStateChanged();
         renderColorPanel();
       } else {
-        hex.value = palette[c.key];
+        hex.value = palette[c.key].slice(1);
       }
     });
     meta.appendChild(hex);
@@ -477,7 +479,7 @@ function renderColorPanel() {
       pct.textContent = Math.round(Number(slider.value) / 255 * 100) + '%';
       onStateChanged();
       swatch.style.setProperty('--sw', palette[c.key]);
-      hex.value = palette[c.key];
+      hex.value = palette[c.key].slice(1);
     });
     alphaWrap.appendChild(slider);
     alphaWrap.appendChild(pct);
