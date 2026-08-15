@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OhMyBias 皮膚設計器</title>
+<meta name="description" content="OhMyBias 米（嘸蝦米鍵盤）皮膚設計器 — 調整配色、工具列、字級與佈局，匯出 .cskin 直接匯入 Android／iOS App。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='8' width='56' height='48' rx='10' fill='%23fff' stroke='%231a1a1a' stroke-width='4'/%3E%3Ctext x='32' y='44' font-size='32' text-anchor='middle' fill='%231a1a1a' font-family='sans-serif'%3E米%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <span class="brand-cap">米</span>
+    <div class="brand-text">
+      <h1>OhMyBias 皮膚設計器</h1>
+      <p>嘸蝦米鍵盤 · 匯出 .cskin 給 Android／iOS App</p>
+    </div>
+  </div>
+  <div id="platform-seg" class="platform-seg" aria-label="目標平台"></div>
+</header>
+
+<main>
+  <section class="topbar">
+    <label class="name-field">
+      <span>皮膚名稱</span>
+      <input id="skin-name" type="text" maxlength="40" autocomplete="off">
+    </label>
+    <div class="actions">
+      <button id="btn-import" type="button" class="btn">匯入配置</button>
+      <button id="btn-export" type="button" class="btn primary">匯出 .cskin</button>
+      <button id="btn-reset" type="button" class="btn subtle">還原預設</button>
+      <input id="file-input" type="file" accept=".cskin,.zip,.json,application/zip,application/json" hidden>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <aside class="preview-col">
+      <div class="preview-card">
+        <div id="pv-tabs" class="pv-tabs"></div>
+        <div id="pv-frame" class="pv-frame"></div>
+        <div id="pv-opts" class="pv-opts"></div>
+      </div>
+    </aside>
+
+    <section class="settings-col">
+      <nav id="settings-tabs" class="settings-tabs" aria-label="設定分頁"></nav>
+      <div class="panel" id="panel-layout" hidden></div>
+      <div class="panel" id="panel-toolbar" hidden></div>
+      <div class="panel" id="panel-swipe" hidden></div>
+      <div class="panel" id="panel-colors" hidden></div>
+      <div class="panel" id="panel-fonts" hidden></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <p>匯出的 <code>.cskin</code> 在 App 設定頁「匯入皮膚（.cskin）」選檔即可套用；重開鍵盤生效。</p>
+  <p>設計進度自動存在這個瀏覽器；建議匯出 <code>.cskin</code> 留檔備份。</p>
+</footer>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
