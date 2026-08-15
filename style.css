@@ -13,7 +13,6 @@
   --lime-deep: #6E8A1F;
   --danger: #C04A35;
   --radius: 10px;
-  --cap-shadow: 0 2px 0 var(--ink);
   font-size: 16px;
 }
 
@@ -54,7 +53,6 @@ input { font: inherit; }
   background: var(--card);
   border: 2px solid var(--ink);
   border-radius: 12px;
-  box-shadow: var(--cap-shadow);
   font-size: 24px;
   font-weight: 600;
 }
@@ -91,13 +89,12 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   background: var(--card);
-  box-shadow: var(--cap-shadow);
   padding: 8px 14px;
-  transition: transform .06s, box-shadow .06s;
+  transition: background .06s;
 }
-.btn:active { transform: translateY(2px); box-shadow: none; }
+.btn:active { background: var(--lime-soft); }
 .btn.primary { background: var(--lime); }
-.btn.subtle { box-shadow: none; border-color: var(--line-soft); color: var(--ink-soft); }
+.btn.subtle { border-color: var(--line-soft); color: var(--ink-soft); }
 .btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .btn:focus-visible, .keycap-tab:focus-visible, .chip:focus-visible, .seg-item:focus-visible {
   outline: 2px solid var(--lime-deep); outline-offset: 2px;
@@ -126,7 +123,6 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
   background: var(--card);
   border: 1.5px solid var(--ink);
   border-radius: 14px;
-  box-shadow: 0 3px 0 var(--ink);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -148,14 +144,12 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
   border: 1.5px solid var(--ink);
   border-radius: 9px;
   background: var(--card);
-  box-shadow: var(--cap-shadow);
   padding: 5px 12px;
   font-size: .85rem;
   white-space: nowrap;
-  transition: transform .06s, box-shadow .06s, background .06s;
+  transition: background .06s;
 }
-.keycap-tab:active { transform: translateY(2px); box-shadow: none; }
-.keycap-tab.on { background: var(--ink); color: var(--paper); transform: translateY(2px); box-shadow: none; }
+.keycap-tab.on { background: var(--ink); color: var(--paper); }
 
 .pv-opts { display: flex; gap: 6px; flex-wrap: wrap; }
 
