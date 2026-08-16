@@ -341,6 +341,7 @@ function renderToolbarPanel() {
 
   const grid = h('div', 'tb-grid');
   for (const it of TOOLBAR_ITEMS) {
+    if (it.dup) continue;   // 功能重複的備用 ID 不入選單（仍可由匯入的 .cskin 帶進來）
     const supported = it[state.platform] !== null;
     const b = h('button', 'tb-option' + (supported ? '' : ' unsupported'));
     b.type = 'button';

@@ -48,6 +48,9 @@ export const FONT_KEYS = [
 /// 工具列按鈕目錄 — 只列兩個 App 至少其一支援的 ID。
 /// android 欄：文字字樣；ios 欄：文字或 { icon }（SF Symbol 名，對應 ohmybias-ios
 /// CandidateBar.swift，以 icons.js 的 SVG 模擬）；null = 該平台不支援（App 顯示空格）。
+/// dup: true = 與前面某個 ID 功能重複（Hamster ID 表本來就有兩個編號指向同一件事），
+/// 仍需留著讓匯入的舊 .cskin 正確顯示，但不放進選單避免重複選項。
+/// 32 起為本家自訂 ID（Hamster 用到 31），需與 App 端 CandidateBar 同步。
 export const TOOLBAR_ITEMS = [
   { id: 0,  label: '空白佔位',   android: '',    ios: '' },
   { id: 1,  label: '設定',       android: '設',  ios: { icon: 'gearshape' } },
@@ -69,7 +72,8 @@ export const TOOLBAR_ITEMS = [
   { id: 26, label: '顏文字',     android: '顏',  ios: '顏' },
   { id: 27, label: '注音查碼',   android: 'ㄅ',  ios: 'ㄅ' },
   { id: 29, label: '九宮格數字', android: '123', ios: '123' },
-  { id: 30, label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' } },
+  { id: 30, label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' }, dup: true },
+  { id: 32, label: '語音輸入',   android: '音',  ios: null },
 ];
 
 /// 內建預設工具列（兩個 App 相同）
