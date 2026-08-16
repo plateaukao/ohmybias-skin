@@ -568,7 +568,8 @@ const PANELS = [
   ['colors', '配色', renderColorPanel],
   ['fonts', '字級', renderFontPanel],
 ];
-let activePanel = 'colors';
+/// 開頁預設停在「工具列」— 排按鈕是最常來這裡做的事，配色反而是慢慢調的
+let activePanel = 'toolbar';
 
 function renderTabs() {
   const tabs = $('#settings-tabs');
