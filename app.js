@@ -313,11 +313,17 @@ function renderLayoutPanel() {
 
 // MARK: - 設定面板：工具列
 
+// 同一個 ID 在兩個平台可能是不同功能（例如 10 在 Android 是全選、iOS 是常用語），
+// 就只寫當下平台的那個名稱，不要兩個併在一行
+function toolbarLabel(it) {
+  return (it.labels && it.labels[state.platform]) || it.label;
+}
+
 function toolbarGlyph(id) {
   const it = TOOLBAR_ITEMS.find(t => t.id === id);
   if (!it) return { glyph: '', supported: false, label: `#${id}` };
   const glyph = it[state.platform];
-  return { glyph: glyph == null ? '' : glyph, supported: glyph !== null, label: it.label };
+  return { glyph: glyph == null ? '' : glyph, supported: glyph !== null, label: toolbarLabel(it) };
 }
 
 function renderToolbarPanel() {
@@ -341,16 +347,18 @@ function renderToolbarPanel() {
 
   const grid = h('div', 'tb-grid');
   for (const it of TOOLBAR_ITEMS) {
-    if (it.dup) continue;   // 功能重複的備用 ID 不入選單（仍可由匯入的 .cskin 帶進來）
-    const supported = it[state.platform] !== null;
-    const b = h('button', 'tb-option' + (supported ? '' : ' unsupported'));
+    // 功能重複的備用 ID 不入選單（仍可由匯入的 .cskin 帶進來）；dup 也可以只針對單一平台
+    if (it.dup === true || it.dup === state.platform) continue;
+    // 這個平台做不到的按鈕直接不列 — 選了也只會變空格（匯入的 .cskin 若帶著，
+    // 上面的工具列格子仍會顯示成淡色空位）
+    if (it[state.platform] === null) continue;
+    const b = h('button', 'tb-option');
     b.type = 'button';
     const glyphSpan = h('span', 'tb-option-glyph');
-    const optGlyph = supported ? it[state.platform] : it.android;
+    const optGlyph = it[state.platform];
     glyphSpan.appendChild(optGlyph ? glyphNode(optGlyph) : document.createTextNode('·'));
     b.appendChild(glyphSpan);
-    b.appendChild(h('span', 'tb-option-label', it.label));
-    if (!supported) b.appendChild(h('span', 'badge', '僅 Android'));
+    b.appendChild(h('span', 'tb-option-label', toolbarLabel(it)));
     b.addEventListener('click', () => {
       state.toolbarButtons[ui.slot] = it.id;
       ui.slot = Math.min(ui.slot + 1, 9);
@@ -675,5 +683,74 @@ if (typeof ResizeObserver !== 'undefined') {
 }
 syncPreviewScale();
 
+// 手機捲動後把釘住的預覽縮窄（樣式在 style.css 的 .preview-col.compact）：
+// 貼到頂端就縮成螢幕約 2/3 寬，讓出來的高度留給下方設定；回捲一段才還原。
+const previewCol = $('.preview-col');
+let previewCompact = false;
+let compactQueued = false;
+let compactSaving = 0;
+
+// 縮小省下多少高度：切一次 class 直接量。先關掉寬度轉場（不然量到轉場中途的值），
+// 同一幀內還原，畫面不會閃。
+function measureCompactSaving() {
+  if (!window.matchMedia || !matchMedia('(max-width: 899px)').matches) { compactSaving = 0; return; }
+  previewCol.classList.add('measuring');
+  previewCol.classList.remove('compact');
+  syncPreviewScale();
+  const full = previewCol.getBoundingClientRect().height;
+  previewCol.classList.add('compact');
+  // 鍵盤高度是靠 --u 換算的，寬度改了要立刻重算 — 平常這步由 ResizeObserver 在
+  // 下一幀補上，同步量的話會量到還沒縮的舊鍵盤高度（只差十幾 px，不是真正的差額）
+  syncPreviewScale();
+  const small = previewCol.getBoundingClientRect().height;
+  if (!previewCompact) previewCol.classList.remove('compact');
+  syncPreviewScale();
+  previewCol.classList.remove('measuring');
+  compactSaving = Math.max(0, full - small);
+}
+
+// 貼齊點（面板在文件裡的版面位置）。面板自己量不到 — 一貼齊，rect.top 就釘在 0，
+// Chrome 的 offsetTop 也跟著含進 sticky 位移（捲到哪就回報到哪）。
+// 改量不會 sticky 的父層 .workspace：面板是它第一個子項，兩者上緣同一條線。
+function previewStickPoint() {
+  return (window.pageYOffset || 0) + previewCol.parentNode.getBoundingClientRect().top;
+}
+
+// 頁面要夠長才縮：縮完文件會變矮，若連貼齊點都捲不到，瀏覽器會把捲動位置夾回來、
+// 面板跟著彈開 → 又縮又還原，在頁尾無限來回（設定項目少的「佈局」分頁最明顯）。
+function roomToStayStuck() {
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  return maxScroll - compactSaving >= previewStickPoint() + 8;
+}
+
+function syncPreviewCompact() {
+  compactQueued = false;
+  const top = previewCol.getBoundingClientRect().top;
+  // 還原門檻要大於「縮小省下的高度」：縮放會改變文件高度，捲動位置跟著被夾、被還原，
+  // 一次可以跳掉整個 compactSaving。門檻比那個跳幅大，才不會縮完馬上又被彈回來還原。
+  // 只有「剛貼齊、還沒縮」那一幀才會去讀 scrollHeight，不是每次捲動都量版面。
+  const next = previewCompact ? top < compactSaving + 24 : (top <= 0 && roomToStayStuck());
+  if (next === previewCompact) return;
+  previewCompact = next;
+  if (next) previewCol.classList.add('compact');
+  else previewCol.classList.remove('compact');
+}
+
+function queuePreviewCompact() {
+  if (compactQueued) return;
+  compactQueued = true;
+  requestAnimationFrame(syncPreviewCompact);
+}
+
+function refreshPreviewCompact() {
+  measureCompactSaving();
+  syncPreviewCompact();
+}
+
+window.addEventListener('scroll', queuePreviewCompact, { passive: true });
+window.addEventListener('resize', refreshPreviewCompact);
+
 setupActions();
 renderAll();
+// 版面畫完才量得到高度
+refreshPreviewCompact();

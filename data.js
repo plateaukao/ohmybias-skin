@@ -49,8 +49,10 @@ export const FONT_KEYS = [
 /// 兩欄都是「文字字樣」或 { icon }（icons.js 的 SVG）：ios 欄的 icon 是 SF Symbol 名，
 /// 對應 ohmybias-ios CandidateBar.swift；android 欄的 icon 對應 App 端用系統圖示畫的按鈕
 /// （目前只有語音輸入 = ic_btn_speak_now）。null = 該平台不支援（App 顯示空格）。
+/// labels: 同一個 ID 在兩個平台是不同功能時，各平台自己的名稱（沒列到的平台用 label）。
 /// dup: true = 與前面某個 ID 功能重複（Hamster ID 表本來就有兩個編號指向同一件事），
 /// 仍需留著讓匯入的舊 .cskin 正確顯示，但不放進選單避免重複選項。
+/// dup: 'ios' / 'android' = 只在那個平台重複（10 在 iOS 做的事跟 5 一模一樣）。
 /// 32 起為本家自訂 ID（Hamster 用到 31），需與 App 端 CandidateBar 同步。
 export const TOOLBAR_ITEMS = [
   { id: 0,  label: '空白佔位',   android: '',    ios: '' },
@@ -62,7 +64,9 @@ export const TOOLBAR_ITEMS = [
   { id: 7,  label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' } },
   { id: 8,  label: 'Emoji',      android: '☺︎',  ios: { icon: 'face.smiling' } },
   { id: 9,  label: '數字鍵盤',   android: '123', ios: '123' },
-  { id: 10, label: '全選（Android）／常用語（iOS）', android: '全', ios: { icon: 'heart.fill' } },
+  // iOS 鍵盤 extension 無 API 可全選，App 端把這格固定當 ♥ 常用語用（= 5），
+  // 所以 iOS 選單不列，只有匯入的 .cskin 帶進來時才會在工具列格子看到（名稱顯示常用語）
+  { id: 10, label: '全選', labels: { ios: '常用語' }, android: '全', ios: { icon: 'heart.fill' }, dup: 'ios' },
   { id: 11, label: '複製',       android: '複',  ios: null },
   { id: 12, label: '剪下',       android: '剪',  ios: null },
   { id: 13, label: '貼上',       android: '貼',  ios: { icon: 'doc.on.clipboard' } },

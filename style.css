@@ -111,6 +111,11 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
 
 /* 手機：預覽釘在頂端，下方設定捲動時仍看得到鍵盤 */
 @media (max-width: 899px) {
+  /* 縮放會改變釘住面板在流內的高度，Chrome 的捲動錨定（scroll anchoring）會反向補償
+     捲動位置，把面板頂回「還沒貼齊」的狀態 → 於是又還原 → 又貼齊，在門檻附近無限來回。
+     這一段的捲動位置由 sticky 自己決定，直接關掉錨定補償。 */
+  html { overflow-anchor: none; }
+
   .preview-col {
     position: sticky; top: 0; z-index: 20;
     background: var(--paper);
@@ -119,6 +124,31 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
     margin: 0 -16px;
     padding: 4px 16px 8px;
   }
+
+  /* 釘住後（.compact 由 app.js 依捲動位置切換）縮成螢幕約 2/3 寬並置中：
+     鍵盤高度靠 --u 等比跟著縮，讓出來的高度留給下方設定。
+     底色仍是整條滿版，捲上來的內容照樣被蓋住。 */
+  .preview-card { width: 100%; transition: width .18s ease; }
+  /* app.js 量「縮小省下多少高度」時暫時掛上，量的是終值而不是轉場中途 */
+  .preview-col.measuring .preview-card { transition: none; }
+  .preview-col.compact .preview-card {
+    /* 用 vw 而不是 % — % 是相對 .preview-col 的內容寬（已扣掉 main 的 padding），
+       講「螢幕 2/3」就直接對螢幕量 */
+    width: min(66vw, 100%);
+    min-width: 216px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 7px;
+  }
+  /* 分頁與選項字級跟著收一點，並改成單行橫捲，免得縮窄後折行把高度吃回去 */
+  .preview-col.compact .keycap-tab { padding: 4px 10px; font-size: .8rem; }
+  .preview-col.compact .chip { font-size: .75rem; padding: 2px 10px; }
+  .preview-col.compact .pv-opts {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .preview-col.compact .pv-opts::-webkit-scrollbar { display: none; }
 }
 
 .preview-card {
@@ -305,30 +335,23 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
 .tb-slot.on { border: 2px solid var(--lime-deep); background: var(--lime-soft); }
 .tb-slot.unsupported { color: var(--line-soft); }
 
+/* 按鈕名稱都短（同 ID 在兩平台不同功能時只顯示當下平台的名稱），格子可以收小、一頁塞更多 */
 .tb-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 6px;
 }
 .tb-option {
   border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
+  border-radius: 8px;
   background: var(--card);
-  padding: 8px 6px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  min-height: 68px;
+  padding: 5px 4px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-height: 50px;
 }
 .tb-option:hover { border-color: var(--ink); }
-.tb-option-glyph { font-size: 1.25rem; line-height: 1.2; }
-.tb-option-label { font-size: .68rem; color: var(--ink-soft); text-align: center; }
-.tb-option.unsupported .tb-option-glyph { opacity: .35; }
-.badge {
-  font-size: .62rem;
-  border: 1px solid var(--line-soft);
-  border-radius: 999px;
-  padding: 0 6px;
-  color: var(--ink-soft);
-}
+.tb-option-glyph { font-size: 1.1rem; line-height: 1.2; }
+.tb-option-label { font-size: .66rem; color: var(--ink-soft); text-align: center; }
 
 /* 配色編輯 */
 .color-head { display: flex; justify-content: flex-start; }
