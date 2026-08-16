@@ -1,4 +1,4 @@
-// OhMyBias 皮膚設計器 — 狀態、設定面板、匯出入。
+// OhMyBias 鍵盤外觀編輯器 — 狀態、設定面板、匯出入。
 // 匯出的 .cskin（zip 內 jsonnet/settings.json，扁平 schema）可直接餵給
 // ohmybias-android / ohmybias-ios 的「匯入皮膚（.cskin）」。
 

@@ -1,9 +1,9 @@
-# OhMyBias 皮膚設計器
+# OhMyBias 鍵盤外觀編輯器
 
-OhMyBias 米（嘸蝦米鍵盤，[Android](https://github.com/plateaukao/ohmybias-android)／iOS）的皮膚設計器。
+OhMyBias 米（嘸蝦米鍵盤，[Android](https://github.com/plateaukao/ohmybias-android)／iOS）的鍵盤外觀編輯器。
 純靜態網頁（vanilla HTML/CSS/JS，零依賴、零 build step），可直接放 GitHub Pages。
 
-本設計器是 Ryan「蝦米輸入法皮膚設計器」的**純化版**：只保留 OhMyBias 兩個 App
+本編輯器是 Ryan「蝦米輸入法皮膚設計器」的**純化版**：只保留 OhMyBias 兩個 App
 實際會讀取的設定（配色、字級、工具列、佈局選項、滑動與長按開關），移除 iOS
 元書輸入法專屬功能（AI 配色、九鍵盤套用範圍、分行滑動開關、jsonnet 佈局編譯打包等），
 並針對手機瀏覽器優化。
@@ -16,7 +16,7 @@ OhMyBias 米（嘸蝦米鍵盤，[Android](https://github.com/plateaukao/ohmybia
 4. 到 OhMyBias App 設定頁 →「匯入皮膚（.cskin）」選檔 → 重開鍵盤生效
 
 設計進度會自動存在瀏覽器（localStorage）；換裝置或清資料前請先匯出 `.cskin` 備份。
-也可匯入既有的 `.cskin`（本設計器或 Ryan 設計器匯出的皆可）繼續編輯。
+也可匯入既有的 `.cskin`（本編輯器或 Ryan 設計器匯出的皆可）繼續編輯。
 
 ## 檔案格式
 
