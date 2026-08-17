@@ -1,0 +1,75 @@
+# 每次 push 到 main：檢查站台不是壞的（JS 語法、引用到的檔案都在），
+# 打包成可離線開的 zip，發 pre-release 附上。
+# pre-release 固定 tag「pre-release」— 永遠只有一份，新 build 先刪舊的再重建（覆蓋）。
+# 線上版由 GitHub Pages 直接吃 main 根目錄（零 build step），這裡多給的是
+# 一份可以帶著走、離線用瀏覽器開的設計器。
+name: prerelease
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prerelease-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 沒有 build step 可以擋錯字，語法檢查就是這個 repo 的「測試」
+      - name: 檢查 JS 語法
+        run: |
+          for f in *.js; do
+            cp "$f" "$RUNNER_TEMP/${f%.js}.mjs"          # --check 要靠副檔名判定 ES module
+            node --check "$RUNNER_TEMP/${f%.js}.mjs" || exit 1
+            echo "ok: $f"
+          done
+
+      - name: 檢查引用到的檔案都在
+        run: |
+          missing=0
+          # 逐行讀，不用 for-in $(...) — favicon 的 data: URI 內含空白，會被拆成一堆碎片
+          while IFS= read -r ref; do
+            case "$ref" in http*|data:*|\#*|'') continue;; esac
+            [ -f "$ref" ] || { echo "::error::index.html 引用了不存在的 $ref"; missing=1; }
+          done < <(grep -oE '(src|href)="[^"]+"' index.html | cut -d'"' -f2)
+          for f in *.js; do
+            while IFS= read -r ref; do
+              [ -z "$ref" ] && continue
+              [ -f "${ref#./}" ] || { echo "::error::$f import 了不存在的 $ref"; missing=1; }
+            done < <(grep -oE "from '\./[^']+'" "$f" | cut -d"'" -f2)
+          done
+          exit $missing
+
+      - name: 打包
+        id: meta
+        run: |
+          SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
+          ZIP="ohmybias-skin-pre.${GITHUB_RUN_NUMBER}.zip"
+          mkdir -p dist/ohmybias-skin
+          cp index.html style.css *.js README.md dist/ohmybias-skin/
+          (cd dist && zip -qr "../${ZIP}" ohmybias-skin)
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "zip=${ZIP}" >> "$GITHUB_OUTPUT"
+
+      - name: 發 pre-release（刪舊的、重建 — 永遠只有一份）
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          gh release delete pre-release --cleanup-tag -y || true
+          gh release create pre-release "${{ steps.meta.outputs.zip }}" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "pre.${GITHUB_RUN_NUMBER} (${{ steps.meta.outputs.short_sha }})" \
+            --notes "$(printf '自動 pre-release build — %s\n\n線上版：https://plateaukao.github.io/ohmybias-skin/\nzip 解開後直接用瀏覽器開 index.html 即可離線使用。\n\ncommit: %s' "$COMMIT_MSG" "$GITHUB_SHA")"
