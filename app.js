@@ -34,7 +34,7 @@ function detectPlatform() {
 function defaultState() {
   return {
     platform: detectPlatform(),
-    skinName: '我的皮膚',
+    skinName: '我的主題',
     keyboardLayout: 'panel',
     longPressLayout: '2',
     toolbarButtons: [...DEFAULT_TOOLBAR],
@@ -272,7 +272,11 @@ function renderPreviewChrome() {
   opts.textContent = '';
   const darkBtn = h('button', 'chip' + (ui.dark ? ' on' : ''), ui.dark ? '☾ 深色' : '☀︎ 淺色');
   darkBtn.type = 'button';
-  darkBtn.addEventListener('click', () => { ui.dark = !ui.dark; renderPreviewChrome(); renderPreviewNow(); });
+  darkBtn.addEventListener('click', () => {
+    ui.dark = !ui.dark;
+    ui.editTheme = ui.dark ? 'dark' : 'light';   // 預覽哪套就編哪套 — 配色面板跟著切
+    renderPreviewChrome(); renderColorPanel(); renderPreviewNow();
+  });
   opts.appendChild(darkBtn);
   const compBtn = h('button', 'chip' + (ui.barMode === 'composing' ? ' on' : ''), '組字中');
   compBtn.type = 'button';
