@@ -658,7 +658,7 @@ function setupActions() {
     state.platform = platform;
     onStateChanged();
     renderAll();
-    toast('已還原為內建 sweetlime 預設');
+    toast('已還原為內建「預設主題」');
   });
 }
 

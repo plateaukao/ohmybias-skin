@@ -1,17 +1,18 @@
 // 資料定義 — 一切以兩個 App 實際讀取的鍵為準：
 // Android: app/src/main/java/.../keyboard/KeyboardTheme.kt
 // iOS:     OhMyBiasKeyboard/KeyboardTheme.swift
-// 預設值 = 內建 sweetlime 皮膚常數（手繪線稿風：淺色白鍵黑框、深色黑鍵灰框、功能鍵反白）。
+// 預設值 = ohmybias-android assets/default_skin.json 的「預設主題」（黑白：淺色白鍵黑框、
+// 深色黑鍵灰框、功能鍵反白）— 那份 JSON 是出廠預設，改了要同步回這裡。
 
 /// 調色盤鍵 — group 供編輯器分組；alias = App 端 fallback 鏈（皮膚未定義該鍵時依序找）
 export const COLOR_KEYS = [
-  { key: 'bg',                       group: '整體',   label: '鍵盤背景',     light: '#FFFFFF', dark: '#000000' },
+  { key: 'bg',                       group: '整體',   label: '鍵盤背景',     light: '#FFFFFFB1', dark: '#000000' },
   { key: 'keyNormal',                group: '一般鍵', label: '鍵底',         light: '#FFFFFF', dark: '#000000' },
   { key: 'keyNormalHighlight',       group: '一般鍵', label: '按下鍵底',     light: '#EBEBEB', dark: '#1A1A1A' },
   { key: 'border',                   group: '一般鍵', label: '邊框',         light: '#000000', dark: '#BBBBBB' },
   { key: 'textMain',                 group: '一般鍵', label: '主文字',       light: '#000000', dark: '#BBBBBB' },
-  { key: 'textSub',                  group: '一般鍵', label: '角標文字',     light: '#666666', dark: '#555555' },
-  { key: 'keySystem',                group: '功能鍵', label: '鍵底',         light: '#D6D6D696', dark: '#CCCCCC' },
+  { key: 'textSub',                  group: '一般鍵', label: '角標文字',     light: '#222222', dark: '#999999' },
+  { key: 'keySystem',                group: '功能鍵', label: '鍵底',         light: '#D6D6D6C2', dark: '#CCCCCC' },
   { key: 'keySystemHighlight',       group: '功能鍵', label: '按下鍵底',     light: '#C7C7C7', dark: '#BBBBBB' },
   { key: 'systemBorder',             group: '功能鍵', label: '邊框',         light: '#000000', dark: '#333333', alias: ['border'] },
   { key: 'textSystem',               group: '功能鍵', label: '文字',         light: '#000000', dark: '#1A1A1A', alias: ['textMain'] },
@@ -81,8 +82,8 @@ export const TOOLBAR_ITEMS = [
   { id: 32, label: '語音輸入',   android: { icon: 'mic' }, ios: null },
 ];
 
-/// 內建預設工具列（兩個 App 相同）
-export const DEFAULT_TOOLBAR = [1, 3, 9, 7, 16, 17, 8, 5, 13, 2];
+/// 內建預設工具列（default_skin.json「預設主題」；32 語音輸入在 iOS 顯示為空格）
+export const DEFAULT_TOOLBAR = [3, 7, 29, 8, 5, 26, 13, 1, 32, 2];
 
 /// 字母頁上滑角標（SwipeData.up）
 export const SWIPE_UP = {
