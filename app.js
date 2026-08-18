@@ -261,8 +261,9 @@ function renderPreviewChrome() {
     ['symbolPanel', '符號面板'],
     ['emoji', 'Emoji'],
   ];
+  // 觀看用的藥丸 chip — 鍵帽造型留給右側「會改到皮膚」的設定分頁
   for (const [id, label] of pages) {
-    const b = h('button', 'keycap-tab' + (ui.page === id ? ' on' : ''), label);
+    const b = h('button', 'chip pv-page' + (ui.page === id ? ' on' : ''), label);
     b.type = 'button';
     b.addEventListener('click', () => { ui.page = id; renderPreviewChrome(); renderPreviewNow(); });
     tabs.appendChild(b);
@@ -289,6 +290,7 @@ function renderPreviewChrome() {
   if (ui.page === 'letters') {
     const bubbleBtn = h('button', 'chip' + (ui.bubble ? ' on' : ''), '長按氣泡');
     bubbleBtn.type = 'button';
+    bubbleBtn.title = '釘住氣泡示意方便調色；也可以直接在鍵盤上長按字母鍵';
     bubbleBtn.addEventListener('click', () => { ui.bubble = !ui.bubble; renderPreviewChrome(); renderPreviewNow(); });
     opts.appendChild(bubbleBtn);
   }

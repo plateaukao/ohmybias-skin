@@ -3,6 +3,7 @@
 // 含空白鍵的列以前列單位寬定寬、空白吃剩餘）、KeyButton.onDraw、CandidateBar、
 // CollectionPanelView、LongPressPopup。設計寬 393dp、鍵盤本體 224dp、候選列 46dp。
 // --u CSS 變數 = 實際像素/393，全部尺寸以 calc(var(--u) * N) 縮放。
+// 按鍵可實際按：按下顯示 highlight 配色、字母鍵長按跳氣泡（見「按鍵互動」段）。
 
 import {
   SWIPE_UP, SWIPE_DOWN, TOOLBAR_ITEMS, PANEL_SYMBOLS, PANEL_EMOJIS,
@@ -125,9 +126,66 @@ function layoutRows(rows, isLetters) {
   return out;
 }
 
+// MARK: - 按鍵互動（對照 KeyButton 按壓高亮與 LongPressPopup 觸發）
+// 按下換 keyNormalHighlight / keySystemHighlight，字母鍵按住 400ms 在該鍵上方跳氣泡 —
+// 「按下鍵底」「長按氣泡」這些配色不用開開關就能在預覽裡實際試到。
+
+const LONG_PRESS_MS = 400;
+
+function bubbleOptionsFor(state, label) {
+  // e 用完整重音樣本（同釘住示意）；其他字母至少示意大小寫排序
+  if (label === 'e') {
+    return state.longPressLayout === '1' ? BUBBLE_SAMPLE_LOWER_FIRST : BUBBLE_SAMPLE_UPPER_FIRST;
+  }
+  const upper = label.toUpperCase();
+  return state.longPressLayout === '1' ? [label, upper] : [upper, label];
+}
+
+function wireKeyPress(d, state, dark, k, body) {
+  const spec = k.spec;
+  const bgKey = spec.special ? 'keySystem' : 'keyNormal';
+  const pressKey = spec.special ? 'keySystemHighlight' : 'keyNormalHighlight';
+  const isLetter = /^[a-z]$/.test(spec.label || '');
+  let timer = null;
+  let bubble = null;
+
+  const press = (ev) => {
+    d.style.background = pal(state, dark, pressKey);
+    // 抓住 pointer：手指滑出鍵外也收得到 up，不會卡在按壓態
+    if (ev && ev.pointerId !== undefined && d.setPointerCapture) {
+      try { d.setPointerCapture(ev.pointerId); } catch (e) { /* 舊瀏覽器 */ }
+    }
+    if (isLetter && state.swipe.longPress) {
+      timer = setTimeout(() => {
+        bubble = buildBubble(state, dark, k, bubbleOptionsFor(state, spec.label));
+        if (bubble) body.appendChild(bubble);
+      }, LONG_PRESS_MS);
+    }
+  };
+  const release = () => {
+    d.style.background = pal(state, dark, bgKey);
+    clearTimeout(timer); timer = null;
+    if (bubble) { bubble.remove(); bubble = null; }
+  };
+
+  if (window.PointerEvent) {
+    d.addEventListener('pointerdown', press);
+    d.addEventListener('pointerup', release);
+    d.addEventListener('pointercancel', release);
+  } else {
+    // 舊 WebView（無 PointerEvent）退回 mouse / touch 事件
+    d.addEventListener('mousedown', press);
+    d.addEventListener('mouseup', release);
+    d.addEventListener('mouseleave', release);
+    d.addEventListener('touchstart', press, { passive: true });
+    d.addEventListener('touchend', release);
+    d.addEventListener('touchcancel', release);
+  }
+}
+
 // MARK: - 按鍵繪製（對照 KeyButton.onDraw）
 
-function buildKey(state, dark, k) {
+function buildKey(state, dark, k, body) {
   const d = el('pv-key' + (k.spec.special ? ' special' : ''));
   d.style.left = u(k.x); d.style.top = u(k.y);
   d.style.width = u(k.w); d.style.height = u(k.h);
@@ -159,6 +217,7 @@ function buildKey(state, dark, k) {
     t.style.color = pal(state, dark, 'textSub');
     d.appendChild(t);
   }
+  wireKeyPress(d, state, dark, k, body);
   return d;
 }
 
@@ -261,11 +320,8 @@ function buildPanel(state, dark, sections, fontSize) {
 
 // MARK: - 長按氣泡（對照 LongPressPopup）
 
-function buildBubble(state, dark, keys) {
-  // 錨在字母頁第一列的 e 鍵上方
-  const anchor = keys.find(k => k.spec.label === 'e');
+function buildBubble(state, dark, anchor, options) {
   if (!anchor) return null;
-  const options = state.longPressLayout === '1' ? BUBBLE_SAMPLE_LOWER_FIRST : BUBBLE_SAMPLE_UPPER_FIRST;
   const itemW = 40, h = 44;
   const pw = itemW * options.length + 8;
   let x = anchor.x + anchor.w / 2 - pw / 2;
@@ -299,6 +355,11 @@ function buildBubble(state, dark, keys) {
 /// ui: { page: 'letters'|'numeric'|'symbolPanel'|'emoji', dark, barMode: 'toolbar'|'composing', bubble }
 export function renderPreview(frame, state, ui) {
   frame.textContent = '';
+  // 長按鍵盤試氣泡時，擋掉瀏覽器右鍵／長按選單（只掛一次）
+  if (!frame.dataset.wired) {
+    frame.dataset.wired = '1';
+    frame.addEventListener('contextmenu', e => e.preventDefault());
+  }
   const dark = ui.dark;
   frame.appendChild(buildBar(state, dark, ui));
 
@@ -316,9 +377,11 @@ export function renderPreview(frame, state, ui) {
   const body = el('pv-body');
   body.style.height = u(BODY_H);
   body.style.background = pal(state, dark, 'bg');
-  keys.forEach(k => body.appendChild(buildKey(state, dark, k)));
+  keys.forEach(k => body.appendChild(buildKey(state, dark, k, body)));
   if (isLetters && ui.bubble && state.swipe.longPress) {
-    const bubble = buildBubble(state, dark, keys);
+    // 釘住示意 — 錨在字母頁第一列的 e 鍵上方
+    const anchor = keys.find(k => k.spec.label === 'e');
+    const bubble = buildBubble(state, dark, anchor, bubbleOptionsFor(state, 'e'));
     if (bubble) body.appendChild(bubble);
   }
   frame.appendChild(body);
