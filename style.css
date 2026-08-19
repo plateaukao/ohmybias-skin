@@ -48,15 +48,11 @@ input { font: inherit; }
 
 .brand { display: flex; align-items: center; gap: 12px; }
 
+/* App 本尊圖示（Play listing 512px 縮版）— 圓角比照 Android 主畫面遮罩 */
 .brand-cap {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 46px; height: 46px;
-  background: var(--card);
-  border: 2px solid var(--ink);
   border-radius: 12px;
-  font-size: 24px;
-  font-weight: 600;
 }
 
 .brand-text h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
@@ -247,6 +243,8 @@ main { max-width: 1080px; margin: 0 auto; padding: 10px 16px 40px; }
 /* SF Symbols 風 SVG 圖示 — 1em 隨所在字級縮放、currentColor 隨 toolbarColor 變色 */
 .sf-icon { display: inline-grid; place-items: center; width: 1em; height: 1em; }
 .sf-icon svg { width: 1em; height: 1em; display: block; }
+/* Material 圖示 24 框內建留白 → 畫 24/19em 光學大小才同級（同 App 端 46dp 列內縮 11dp）*/
+.m-icon, .m-icon svg { width: 1.26em; height: 1.26em; }
 .pv-composing { font-family: ui-monospace, Menlo, monospace; margin-right: calc(var(--u) * 8); }
 .pv-cand { border-radius: 6px; line-height: 1.2; white-space: nowrap; }
 

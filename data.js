@@ -48,8 +48,8 @@ export const FONT_KEYS = [
 
 /// 工具列按鈕目錄 — 只列兩個 App 至少其一支援的 ID。
 /// 兩欄都是「文字字樣」或 { icon }（icons.js 的 SVG）：ios 欄的 icon 是 SF Symbol 名，
-/// 對應 ohmybias-ios CandidateBar.swift；android 欄的 icon 對應 App 端用系統圖示畫的按鈕
-/// （目前只有語音輸入 = ic_btn_speak_now）。null = 該平台不支援（App 顯示空格）。
+/// 對應 ohmybias-ios CandidateBar.swift；android 欄的 icon 是 Material Symbols 名，
+/// 對應 App 端 res/drawable/ic_tb_*.xml。null = 該平台不支援（App 顯示空格）。
 /// labels: 同一個 ID 在兩個平台是不同功能時，各平台自己的名稱（沒列到的平台用 label）。
 /// dup: true = 與前面某個 ID 功能重複（Hamster ID 表本來就有兩個編號指向同一件事），
 /// 仍需留著讓匯入的舊 .cskin 正確顯示，但不放進選單避免重複選項。
@@ -57,28 +57,28 @@ export const FONT_KEYS = [
 /// 32 起為本家自訂 ID（Hamster 用到 31），需與 App 端 CandidateBar 同步。
 export const TOOLBAR_ITEMS = [
   { id: 0,  label: '空白佔位',   android: '',    ios: '' },
-  { id: 1,  label: '設定',       android: '設',  ios: { icon: 'gearshape' } },
-  { id: 2,  label: '收折鍵盤',   android: '∨',   ios: { icon: 'chevron.down' } },
+  { id: 1,  label: '設定',       android: { icon: 'settings' },      ios: { icon: 'gearshape' } },
+  { id: 2,  label: '收折鍵盤',   android: { icon: 'keyboard_hide' }, ios: { icon: 'chevron.down' } },
   { id: 3,  label: '中英切換',   android: '米',  ios: '米' },
   { id: 4,  label: '簡繁切換',   android: '簡',  ios: null },
-  { id: 5,  label: '常用語',     android: '♥︎',  ios: { icon: 'heart.fill' } },
-  { id: 7,  label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' } },
-  { id: 8,  label: 'Emoji',      android: '☺︎',  ios: { icon: 'face.smiling' } },
-  { id: 9,  label: '數字鍵盤',   android: '123', ios: '123' },
+  { id: 5,  label: '常用語',     android: { icon: 'favorite' },      ios: { icon: 'heart.fill' } },
+  { id: 7,  label: '符號面板',   android: { icon: 'emoji_symbols' }, ios: { icon: 'curlybraces' } },
+  { id: 8,  label: 'Emoji',      android: { icon: 'mood' },          ios: { icon: 'face.smiling' } },
+  { id: 9,  label: '數字鍵盤',   android: { icon: '123' },           ios: '123' },
   // iOS 鍵盤 extension 無 API 可全選，App 端把這格固定當 ♥ 常用語用（= 5），
   // 所以 iOS 選單不列，只有匯入的 .cskin 帶進來時才會在工具列格子看到（名稱顯示常用語）
-  { id: 10, label: '全選', labels: { ios: '常用語' }, android: '全', ios: { icon: 'heart.fill' }, dup: 'ios' },
-  { id: 11, label: '複製',       android: '複',  ios: null },
-  { id: 12, label: '剪下',       android: '剪',  ios: null },
-  { id: 13, label: '貼上',       android: '貼',  ios: { icon: 'doc.on.clipboard' } },
-  { id: 14, label: '復原',       android: '↶',   ios: null },
-  { id: 15, label: '重做',       android: '↷',   ios: null },
-  { id: 16, label: '游標左移',   android: '←',   ios: { icon: 'arrow.left' } },
-  { id: 17, label: '游標右移',   android: '→',   ios: { icon: 'arrow.right' } },
+  { id: 10, label: '全選', labels: { ios: '常用語' }, android: { icon: 'select_all' }, ios: { icon: 'heart.fill' }, dup: 'ios' },
+  { id: 11, label: '複製',       android: { icon: 'content_copy' },  ios: null },
+  { id: 12, label: '剪下',       android: { icon: 'content_cut' },   ios: null },
+  { id: 13, label: '貼上',       android: { icon: 'content_paste' }, ios: { icon: 'doc.on.clipboard' } },
+  { id: 14, label: '復原',       android: { icon: 'undo' },          ios: null },
+  { id: 15, label: '重做',       android: { icon: 'redo' },          ios: null },
+  { id: 16, label: '游標左移',   android: { icon: 'chevron_left' },  ios: { icon: 'arrow.left' } },
+  { id: 17, label: '游標右移',   android: { icon: 'chevron_right' }, ios: { icon: 'arrow.right' } },
   { id: 26, label: '顏文字',     android: '顏',  ios: '顏' },
   { id: 27, label: '注音查碼',   android: 'ㄅ',  ios: 'ㄅ' },
-  { id: 29, label: '九宮格數字', android: '123', ios: '123' },
-  { id: 30, label: '符號面板',   android: '符',  ios: { icon: 'curlybraces' }, dup: true },
+  { id: 29, label: '九宮格數字', android: { icon: '123' },           ios: '123' },
+  { id: 30, label: '符號面板',   android: { icon: 'emoji_symbols' }, ios: { icon: 'curlybraces' }, dup: true },
   { id: 32, label: '語音輸入',   android: { icon: 'mic' }, ios: null },
 ];
 
