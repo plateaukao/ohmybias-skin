@@ -64,7 +64,7 @@ export const TOOLBAR_ITEMS = [
   { id: 5,  label: '常用語',     android: { icon: 'favorite' },      ios: { icon: 'heart.fill' } },
   { id: 7,  label: '符號面板',   android: { icon: 'emoji_symbols' }, ios: { icon: 'curlybraces' } },
   { id: 8,  label: 'Emoji',      android: { icon: 'mood' },          ios: { icon: 'face.smiling' } },
-  { id: 9,  label: '數字鍵盤',   android: { icon: '123' },           ios: '123' },
+  { id: 9,  label: '數字鍵盤',   android: { icon: 'dialpad' },       ios: '123' },
   // iOS 鍵盤 extension 無 API 可全選，App 端把這格固定當 ♥ 常用語用（= 5），
   // 所以 iOS 選單不列，只有匯入的 .cskin 帶進來時才會在工具列格子看到（名稱顯示常用語）
   { id: 10, label: '全選', labels: { ios: '常用語' }, android: { icon: 'select_all' }, ios: { icon: 'heart.fill' }, dup: 'ios' },
@@ -77,7 +77,7 @@ export const TOOLBAR_ITEMS = [
   { id: 17, label: '游標右移',   android: { icon: 'chevron_right' }, ios: { icon: 'arrow.right' } },
   { id: 26, label: '顏文字',     android: '顏',  ios: '顏' },
   { id: 27, label: '注音查碼',   android: 'ㄅ',  ios: 'ㄅ' },
-  { id: 29, label: '九宮格數字', android: { icon: '123' },           ios: '123' },
+  { id: 29, label: '九宮格數字', android: { icon: 'dialpad' },       ios: '123' },
   { id: 30, label: '符號面板',   android: { icon: 'emoji_symbols' }, ios: { icon: 'curlybraces' }, dup: true },
   { id: 32, label: '語音輸入',   android: { icon: 'mic' }, ios: null },
 ];
