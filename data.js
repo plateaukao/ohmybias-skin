@@ -10,11 +10,13 @@ export const COLOR_KEYS = [
   { key: 'keyNormal',                group: '一般鍵', label: '鍵底',         light: '#FFFFFF', dark: '#000000' },
   { key: 'keyNormalHighlight',       group: '一般鍵', label: '按下鍵底',     light: '#EBEBEB', dark: '#1A1A1A' },
   { key: 'border',                   group: '一般鍵', label: '邊框',         light: '#000000', dark: '#BBBBBB' },
+  { key: 'borderHighlight',          group: '一般鍵', label: '按下邊框',     light: '#000000', dark: '#BBBBBB', alias: ['border'] },
   { key: 'textMain',                 group: '一般鍵', label: '主文字',       light: '#000000', dark: '#BBBBBB' },
   { key: 'textSub',                  group: '一般鍵', label: '角標文字',     light: '#222222', dark: '#999999' },
   { key: 'keySystem',                group: '功能鍵', label: '鍵底',         light: '#D6D6D6C2', dark: '#CCCCCC' },
   { key: 'keySystemHighlight',       group: '功能鍵', label: '按下鍵底',     light: '#C7C7C7', dark: '#BBBBBB' },
   { key: 'systemBorder',             group: '功能鍵', label: '邊框',         light: '#000000', dark: '#333333', alias: ['border'] },
+  { key: 'systemBorderHighlight',    group: '功能鍵', label: '按下邊框',     light: '#000000', dark: '#333333', alias: ['systemBorder', 'border'] },
   { key: 'textSystem',               group: '功能鍵', label: '文字',         light: '#000000', dark: '#1A1A1A', alias: ['textMain'] },
   { key: 'toolbarBg',                group: '工具列', label: '背景',         light: '#F0F0F0', dark: '#000000', alias: ['bg'] },
   { key: 'toolbarColor',             group: '工具列', label: '圖示文字',     light: '#000000', dark: '#CCCCCC' },
@@ -32,8 +34,10 @@ export const COLOR_KEYS = [
   { key: 'bubbleTextUnselected',     group: '長按氣泡', label: '文字',       light: '#000000', dark: '#1A1A1A' },
 ];
 
-/// 邊框寬（dp）— palette 內的數值鍵
+/// 邊框寬（dp）— palette 內的數值鍵。borderSizeHighlight = 按下時的邊框寬，
+/// App 端未定義時鏈回 borderSize（舊皮膚外觀不變）。
 export const BORDER_SIZE_DEFAULT = 1;
+export const BORDER_SIZE_HIGHLIGHT_DEFAULT = 1;
 
 /// 字級（groups）— 只留兩個 App 都會讀的鍵
 export const FONT_KEYS = [

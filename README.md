@@ -22,7 +22,8 @@ OhMyBias 米（嘸蝦米鍵盤，[Android](https://github.com/plateaukao/ohmybia
 
 匯出的 `.cskin` 是 zip 容器，內含 `jsonnet/settings.json`（扁平 schema）：
 `skinInfo.name`、`keyboardLayout`、`longPressLayout`、`toolbarButtons`、
-五個滑動／長按布林旗標、`palette.light/dark`（24 色＋`borderSize`）、`groups`（7 個字級）。
+五個滑動／長按布林旗標、`palette.light/dark`（26 色＋`borderSize`／`borderSizeHighlight`）、
+`groups`（7 個字級）。
 與 App 端 `SkinSettings` 的解析邏輯一一對應；預覽的取色 fallback 鏈與內建
 sweetlime 預設值也與 App 端 `KeyboardTheme` 相同，所見即所得。
 

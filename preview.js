@@ -32,6 +32,11 @@ function borderSize(state, dark) {
   const v = state.palette[dark ? 'dark' : 'light'].borderSize;
   return typeof v === 'number' ? v : 1;
 }
+/// 按下時的邊框寬 — 未定義時鏈回一般邊框寬（同 KeyboardTheme.borderWidthHighlight）
+function borderSizePressed(state, dark) {
+  const v = state.palette[dark ? 'dark' : 'light'].borderSizeHighlight;
+  return typeof v === 'number' ? v : borderSize(state, dark);
+}
 
 // MARK: - 版面定義（對照 KeyboardView letterRows/numberRows/numeric9Rows）
 
@@ -145,12 +150,16 @@ function wireKeyPress(d, state, dark, k, body) {
   const spec = k.spec;
   const bgKey = spec.special ? 'keySystem' : 'keyNormal';
   const pressKey = spec.special ? 'keySystemHighlight' : 'keyNormalHighlight';
+  const bdKey = spec.special ? 'systemBorder' : 'border';
+  const pressBdKey = spec.special ? 'systemBorderHighlight' : 'borderHighlight';
   const isLetter = /^[a-z]$/.test(spec.label || '');
   let timer = null;
   let bubble = null;
 
   const press = (ev) => {
     d.style.background = pal(state, dark, pressKey);
+    d.style.borderColor = pal(state, dark, pressBdKey);
+    d.style.borderWidth = u(borderSizePressed(state, dark));
     // 抓住 pointer：手指滑出鍵外也收得到 up，不會卡在按壓態
     if (ev && ev.pointerId !== undefined && d.setPointerCapture) {
       try { d.setPointerCapture(ev.pointerId); } catch (e) { /* 舊瀏覽器 */ }
@@ -164,6 +173,8 @@ function wireKeyPress(d, state, dark, k, body) {
   };
   const release = () => {
     d.style.background = pal(state, dark, bgKey);
+    d.style.borderColor = pal(state, dark, bdKey);
+    d.style.borderWidth = u(borderSize(state, dark));
     clearTimeout(timer); timer = null;
     if (bubble) { bubble.remove(); bubble = null; }
   };

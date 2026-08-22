@@ -3,7 +3,8 @@
 // ohmybias-android / ohmybias-ios 的「匯入皮膚（.cskin）」。
 
 import {
-  COLOR_KEYS, BORDER_SIZE_DEFAULT, FONT_KEYS, TOOLBAR_ITEMS, DEFAULT_TOOLBAR,
+  COLOR_KEYS, BORDER_SIZE_DEFAULT, BORDER_SIZE_HIGHLIGHT_DEFAULT,
+  FONT_KEYS, TOOLBAR_ITEMS, DEFAULT_TOOLBAR,
 } from './data.js';
 import { renderPreview, DESIGN_WIDTH } from './preview.js';
 import { zipStore, extractSettingsJson } from './zip.js';
@@ -17,6 +18,7 @@ function defaultPalette(mode) {
   const p = {};
   for (const c of COLOR_KEYS) p[c.key] = c[mode];
   p.borderSize = BORDER_SIZE_DEFAULT;
+  p.borderSizeHighlight = BORDER_SIZE_HIGHLIGHT_DEFAULT;
   return p;
 }
 
@@ -86,6 +88,9 @@ function materializePalette(imported, mode) {
     out[c.key] = v || c[mode];
   }
   out.borderSize = typeof src.borderSize === 'number' ? src.borderSize : BORDER_SIZE_DEFAULT;
+  // 按下邊框寬未定義時鏈回一般邊框寬（同 App 端 KeyboardTheme.borderWidthHighlight）
+  out.borderSizeHighlight = typeof src.borderSizeHighlight === 'number' ? src.borderSizeHighlight
+    : out.borderSize;
   return out;
 }
 
@@ -504,21 +509,26 @@ function renderColorPanel() {
   }
 
   root.appendChild(h('h3', 'field-title', '邊框寬'));
-  const bwRow = h('div', 'font-row');
-  const bwSlider = h('input');
-  bwSlider.type = 'range';
-  bwSlider.min = '0'; bwSlider.max = '3'; bwSlider.step = '0.5';
-  bwSlider.value = String(palette.borderSize);
-  const bwVal = h('span', 'font-value', palette.borderSize + ' dp');
-  bwSlider.addEventListener('input', () => {
-    palette.borderSize = Number(bwSlider.value);
-    bwVal.textContent = palette.borderSize + ' dp';
-    onStateChanged();
-  });
-  bwRow.appendChild(h('span', 'font-label', '按鍵邊框'));
-  bwRow.appendChild(bwSlider);
-  bwRow.appendChild(bwVal);
-  root.appendChild(bwRow);
+  root.appendChild(h('p', 'field-note', '按下邊框寬可與平時不同（做出按下加粗的效果）。'));
+  const borderWidthRow = (label, key) => {
+    const row = h('div', 'font-row');
+    const slider = h('input');
+    slider.type = 'range';
+    slider.min = '0'; slider.max = '3'; slider.step = '0.5';
+    slider.value = String(palette[key]);
+    const val = h('span', 'font-value', palette[key] + ' dp');
+    slider.addEventListener('input', () => {
+      palette[key] = Number(slider.value);
+      val.textContent = palette[key] + ' dp';
+      onStateChanged();
+    });
+    row.appendChild(h('span', 'font-label', label));
+    row.appendChild(slider);
+    row.appendChild(val);
+    root.appendChild(row);
+  };
+  borderWidthRow('按鍵邊框', 'borderSize');
+  borderWidthRow('按下邊框', 'borderSizeHighlight');
 
   root.appendChild(h('h3', 'field-title', '雙模式覆寫'));
   const copyWrap = h('div', 'copy-wrap');
